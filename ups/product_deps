@@ -295,8 +295,9 @@ end_product_list
 #   *required* unless the only_for_build flag is specified, in which
 #   case it is optional.
 #
-#qualifier	art		clang	gcc	compiler	notes
-#end_qualifier_list
+qualifier	cetmodules
+-nq-		-nq-
+end_qualifier_list
 ####################################
 
 ####################################
