@@ -17,6 +17,6 @@ cet_cmake_module_directories(Modules BINARY)
 # source
 add_subdirectory(Modules)
 
-cet_cmake_config(NO_CMAKE_CONFIG)
+cet_cmake_config(ARCH_INDEPENDENT)
 
 
