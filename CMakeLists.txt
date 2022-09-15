@@ -10,7 +10,7 @@ project(larfinder VERSION 01.00.00 LANGUAGES NONE)
 include(CetCMakeEnv)
 
 # larfinder has no architecture dependence
-cet_cmake_env( noarch )
+cet_cmake_env()
 
 cet_cmake_module_directories(Modules BINARY)
 
