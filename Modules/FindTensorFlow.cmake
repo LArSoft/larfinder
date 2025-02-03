@@ -17,7 +17,7 @@ set(_ftf_libs "_framework" "" "_cc")
 set(_ftf_transitive_deps TensorFlow::framework)
 set(_ftf_transitive_deps_cc TensorFlow::framework)
 set(_ftf_transitive_deps_framework protobuf::libprotobuf Eigen3::Eigen Threads::Threads ZLIB::ZLIB ${_ftf_m} ${CMAKE_DL_LIBS})
-set(_ftf_deps GIF gRPC JPEG PNG Protobuf SQLite3 Threads ZLIB)
+set(_ftf_deps GIF gRPC JPEG Eigen3 PNG Protobuf SQLite3 Threads ZLIB)
 unset(_ftf_m)
 unset(_ftf_rt)
 
