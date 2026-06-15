@@ -87,6 +87,11 @@ unset(_ftf_fphsa_extra_required_vars)
 unset(_ftf_fphsa_extra_args)
 
 if (TensorFlow_FOUND)
+  # TensorFlow headers (via abseil) rely on __int128 (GCC extension),
+  # so consumers should suppress -Wpedantic for these imported targets.
+  set(_ftf_no_pedantic
+    "$<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CXX_COMPILER_ID:GNU,Clang>>:-Wno-pedantic>")
+
   foreach (_ftf_lib IN LISTS _ftf_libs)
     if (_ftf_lib)
       string(REGEX REPLACE "^_" "TensorFlow::" _ftf_tgt "${_ftf_lib}")
@@ -103,10 +108,13 @@ if (TensorFlow_FOUND)
         set_property(TARGET ${_ftf_tgt}
           APPEND PROPERTY INTERFACE_LINK_LIBRARIES "${_ftf_tdep}")
       endforeach()
+      set_property(TARGET ${_ftf_tgt}
+        APPEND PROPERTY INTERFACE_COMPILE_OPTIONS "${_ftf_no_pedantic}")
       unset(_ftf_tdep)
       unset(_ftf_transitive_deps_${_ftf_lib})
     endif()
   endforeach()
+  unset(_ftf_no_pedantic)
 endif()
 
 unset(_ftf_lib)
