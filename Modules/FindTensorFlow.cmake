@@ -97,7 +97,8 @@ if (TensorFlow_FOUND)
       add_library(${_ftf_tgt} SHARED IMPORTED)
       set_target_properties(${_ftf_tgt} PROPERTIES
         IMPORTED_LOCATION "${TensorFlow${_ftf_lib}_LIBRARY}"
-        INTERFACE_INCLUDE_DIRECTORIES "${TensorFlow_INCLUDE_DIR}")
+        INTERFACE_INCLUDE_DIRECTORIES "${TensorFlow_INCLUDE_DIR}"
+        IMPORTED_NO_SYSTEM TRUE)
       foreach (_ftf_tdep IN LISTS _ftf_transitive_deps${_ftf_lib})
         set_property(TARGET ${_ftf_tgt}
           APPEND PROPERTY INTERFACE_LINK_LIBRARIES "${_ftf_tdep}")
