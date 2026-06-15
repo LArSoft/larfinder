@@ -17,13 +17,14 @@ set(_ftf_libs "_framework" "" "_cc")
 set(_ftf_transitive_deps TensorFlow::framework)
 set(_ftf_transitive_deps_cc TensorFlow::framework)
 set(_ftf_transitive_deps_framework protobuf::libprotobuf Eigen3::Eigen Threads::Threads ZLIB::ZLIB ${_ftf_m} ${CMAKE_DL_LIBS})
-set(_ftf_deps GIF gRPC JPEG Eigen3 PNG Protobuf SQLite3 Threads ZLIB)
+# The order in the following list matters!
+set(_ftf_deps GIF Protobuf gRPC JPEG Eigen3 PNG SQLite3 Threads ZLIB)
 unset(_ftf_m)
 unset(_ftf_rt)
 
 unset(_ftf_fphsa_extra_args)
 if (NOT TensorFlow_FOUND)
-  find_path(TensorFlow_INCLUDE_DIR tensorflow/core/public/version.h PATH_SUFFIXES include PATHS ${TENSORFLOW_INC} $ENV{TENSORFLOW_INC})
+  find_path(TensorFlow_INCLUDE_DIR tensorflow/core/public/version.h PATH_SUFFIXES include PATHS ${TENSORFLOW_INC} $ENV{TENSORFLOW_INC} $ENV{TENSORFLOW_DIR})
   mark_as_advanced(TensorFlow_INCLUDE_DIR)
   if (TensorFlow_INCLUDE_DIR)
     file(STRINGS "${TensorFlow_INCLUDE_DIR}/tensorflow/core/public/version.h"
