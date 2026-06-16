@@ -17,13 +17,14 @@ set(_ftf_libs "_framework" "" "_cc")
 set(_ftf_transitive_deps TensorFlow::framework)
 set(_ftf_transitive_deps_cc TensorFlow::framework)
 set(_ftf_transitive_deps_framework protobuf::libprotobuf Eigen3::Eigen Threads::Threads ZLIB::ZLIB ${_ftf_m} ${CMAKE_DL_LIBS})
-set(_ftf_deps GIF gRPC JPEG Eigen3 PNG Protobuf SQLite3 Threads ZLIB)
+# The order in the following list matters!
+set(_ftf_deps GIF Protobuf gRPC JPEG Eigen3 PNG SQLite3 Threads ZLIB)
 unset(_ftf_m)
 unset(_ftf_rt)
 
 unset(_ftf_fphsa_extra_args)
 if (NOT TensorFlow_FOUND)
-  find_path(TensorFlow_INCLUDE_DIR tensorflow/core/public/version.h PATH_SUFFIXES include PATHS ${TENSORFLOW_INC} $ENV{TENSORFLOW_INC})
+  find_path(TensorFlow_INCLUDE_DIR tensorflow/core/public/version.h PATH_SUFFIXES include PATHS ${TENSORFLOW_INC} $ENV{TENSORFLOW_INC} $ENV{TENSORFLOW_DIR})
   mark_as_advanced(TensorFlow_INCLUDE_DIR)
   if (TensorFlow_INCLUDE_DIR)
     file(STRINGS "${TensorFlow_INCLUDE_DIR}/tensorflow/core/public/version.h"
@@ -86,6 +87,11 @@ unset(_ftf_fphsa_extra_required_vars)
 unset(_ftf_fphsa_extra_args)
 
 if (TensorFlow_FOUND)
+  # TensorFlow headers (via abseil) rely on __int128 (GCC extension),
+  # so consumers should suppress -Wpedantic for these imported targets.
+  set(_ftf_no_pedantic
+    "$<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CXX_COMPILER_ID:GNU,Clang>>:-Wno-pedantic>")
+
   foreach (_ftf_lib IN LISTS _ftf_libs)
     if (_ftf_lib)
       string(REGEX REPLACE "^_" "TensorFlow::" _ftf_tgt "${_ftf_lib}")
@@ -96,15 +102,19 @@ if (TensorFlow_FOUND)
       add_library(${_ftf_tgt} SHARED IMPORTED)
       set_target_properties(${_ftf_tgt} PROPERTIES
         IMPORTED_LOCATION "${TensorFlow${_ftf_lib}_LIBRARY}"
-        INTERFACE_INCLUDE_DIRECTORIES "${TensorFlow_INCLUDE_DIR}")
+        INTERFACE_INCLUDE_DIRECTORIES "${TensorFlow_INCLUDE_DIR}"
+        IMPORTED_NO_SYSTEM TRUE)
       foreach (_ftf_tdep IN LISTS _ftf_transitive_deps${_ftf_lib})
         set_property(TARGET ${_ftf_tgt}
           APPEND PROPERTY INTERFACE_LINK_LIBRARIES "${_ftf_tdep}")
       endforeach()
+      set_property(TARGET ${_ftf_tgt}
+        APPEND PROPERTY INTERFACE_COMPILE_OPTIONS "${_ftf_no_pedantic}")
       unset(_ftf_tdep)
       unset(_ftf_transitive_deps_${_ftf_lib})
     endif()
   endforeach()
+  unset(_ftf_no_pedantic)
 endif()
 
 unset(_ftf_lib)
